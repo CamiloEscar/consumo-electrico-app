@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Calculation {
+  id               Int      @id @default(autoincrement())
+  totalConsumption Float
+  createdAt        DateTime @default(now())
+  devices          Device[]
+}
+
+model Device {
+  id              Int          @id @default(autoincrement())
+  name            String       // Nombre completo del dispositivo
+  type            String       // Tipo de dispositivo (tv, refrigerator, etc.)
+  brand           String       // Marca
+  model           String       // Modelo
+  watts           Int          // Consumo en watts
+  hoursPerDay     Float       // Horas de uso por día
+  daysPerWeek     Int         // Días de uso por semana
+  category        String?      // Categoría (kitchen, entertainment, etc.)
+  description     String?      // Descripción opcional
+  specifications  Json?        // Especificaciones adicionales
+  calculation     Calculation? @relation(fields: [calculationId], references: [id])
+  calculationId   Int?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@unique([type, brand, model])
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  value     String   @unique
+  label     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
